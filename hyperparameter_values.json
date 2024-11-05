@@ -1,0 +1,9 @@
+{
+    "n_dense_layers": [1, 8, 1],
+    "n_dense_nodes":[1, 256, 8],
+    "dense_activation_fn":["relu"],
+    "dense_dropout": [0, 0.8, 0.1],
+    "lr": [0.000001, 0.3, 0.000003],
+    "epochs":200,
+    "n_searches" : 1000
+}
