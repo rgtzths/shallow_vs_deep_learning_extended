@@ -23,7 +23,7 @@ class Botnet_IOT(Util):
         X = data.drop(columns=['Attack', 'Attack_subType', 'label', 'Device_Name'])
         y = data['label']
         n_samples=X.shape[0]
-        
+
         x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=True)
 
         scaler = StandardScaler()
@@ -43,5 +43,22 @@ class Botnet_IOT(Util):
 
 
     def create_model(self):
-        #TODO
-        return
+        #UNSW model
+        model= tf.keras.models.Sequential([
+            # input layer
+            tf.keras.layers.Input(input_shape=(23,)),
+            # hidden layers
+            tf.keras.layers.Dense(128, activation='relu'),
+            tf.keras.layers.Dense(96, activation='relu'),
+            tf.keras.layers.Dense(64, activation='relu'),
+            tf.keras.layers.Dropout(0.25),
+            # output layer
+            tf.keras.layers.Dense(2, activation='softmax')
+        ])
+        model.compile(
+                    optimizer=tf.keras.optimizers.Adam(), 
+                    loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+                    metrics=['accuracy']
+                )
+
+        return model

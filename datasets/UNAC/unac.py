@@ -47,7 +47,7 @@ class UNAC(Util):
     def create_model(self):
         model=  tf.keras.models.Sequential([
             # input layer
-            tf.keras.layers.InputLayer(input_shape=(21,)),
+            tf.keras.layers.Input(input_shape=(21,)),
             # hidden layers
             tf.keras.layers.Dense(12, activation='relu'),
             tf.keras.layers.Dense(8, activation='relu'),

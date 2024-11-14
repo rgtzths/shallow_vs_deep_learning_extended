@@ -25,6 +25,10 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, Gradien
 from sklearn.model_selection import GridSearchCV
 import tensorflow as tf
 
+
+# Set an environment variable
+os.environ['OPENBLAS_NUM_THREADS'] = '64'
+
 import warnings
 warnings.filterwarnings('ignore')
 os.environ["PYTHONWARNINGS"] = "ignore" # Also affect subprocesses
@@ -51,7 +55,7 @@ def fit(cls, X, y, is_sklearn):
     else:
         early_stop_callback = tf.keras.callbacks.EarlyStopping(monitor='accuracy', patience=10)
         model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
-            filepath="temp_model",
+            filepath="temp_model.keras",
             monitor='accuracy',
             mode='max',
             save_best_only=True)
@@ -70,7 +74,6 @@ def predict(cls, X, is_sklearn):
 
 
 def optimize(cls_name, parameters, X_train, y_train, cv=5):
-    print(X_train.shape)
     with joblib.parallel_backend(backend='loky', n_jobs=-1):
         cls = model_mapping[cls_name]()
         grid = GridSearchCV(cls, param_grid=parameters, scoring='f1_weighted', cv=cv, n_jobs=-1, refit=best_score)
@@ -92,7 +95,7 @@ def best_score(cv_results_):
 
 def train_models(X_train, y_train, X_test, y_test, model_fn, seed, results_folder):
     results_file = open(results_folder/"results.md", "w")
-    models = [('DNN', {}),
+    models = [#('DNN', {}),
               ('LOG', {'random_state':[seed], 'penalty': ['l1','l2'], 'C': [0.001, 0.01, 0.1, 1, 10], 
                        'solver' :['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']}),
               ('KNN', {'weights': ['uniform', 'distance'], 'n_neighbors': [3,5,7,9], 'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute'],
@@ -135,6 +138,7 @@ def train_models(X_train, y_train, X_test, y_test, model_fn, seed, results_folde
             joblib.dump(cls, results_folder/ f'{cls_name}.joblib')
         else:
             cls.save(results_folder/f"dnn_model")
+    results_file.close()
 
 
 if __name__ == "__main__":
@@ -148,24 +152,24 @@ if __name__ == "__main__":
         raise ValueError(f"Dataset name must be one of {list(DATASETS.keys())} or None")
     
     tf.keras.utils.set_random_seed(args.s)
+    results = pathlib.Path(args.r)
+    
     if args.d == None:
         for dataset in DATASETS.keys():
-            if dataset not in ["Slicing5G", "NetworkSlicing5G", "NetSlice5G", "UNSW", "IOT_DNL"]:
-                print(f"Running dataset: {dataset}")
-                d = DATASETS[dataset]()
+            #if dataset not in ["Slicing5G", "NetworkSlicing5G", "NetSlice5G", "UNSW", "IOT_DNL"]:
+            print(f"Running dataset: {dataset}")
+            d = DATASETS[dataset]()
 
-                results = pathlib.Path(args.r)
-                results = results / d.name
-                results.mkdir(parents=True, exist_ok=True)
+            results = results / d.name
+            results.mkdir(parents=True, exist_ok=True)
 
-                X_train, y_train = d.load_training_data()
-                X_test, y_test = d.load_test_data()
+            X_train, y_train = d.load_training_data()
+            X_test, y_test = d.load_test_data()
 
-                train_models(X_train, y_train, X_test, y_test, d.create_model, args.s, results)
+            train_models(X_train, y_train, X_test, y_test, d.create_model, args.s, results)
     else:
         d = DATASETS[args.d]()
 
-        results = pathlib.Path(args.r)
         results = results / d.name
         results.mkdir(parents=True, exist_ok=True)
 

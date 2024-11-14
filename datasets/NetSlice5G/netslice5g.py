@@ -68,7 +68,7 @@ class NetSlice5G(Util):
     def create_model(self):
         model = tf.keras.models.Sequential([
                 # flatten layer
-                tf.keras.layers.Flatten(input_shape=(16,)),
+                tf.keras.layers.Input(shape=(16,)),
                 # hidden layers
                 tf.keras.layers.Dense(73, activation='relu'),
                 tf.keras.layers.Dropout(0.5),

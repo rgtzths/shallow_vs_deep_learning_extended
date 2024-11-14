@@ -45,7 +45,7 @@ class IOT_DNL(Util):
     def create_model(self):
         model =  tf.keras.models.Sequential([
             # flatten layer
-            tf.keras.layers.Flatten(input_shape=(11,)),
+            tf.keras.layers.Input(shape=(11,)),
             # hidden layers
             tf.keras.layers.Dense(64, activation='relu'),
             tf.keras.layers.Dropout(0.1),

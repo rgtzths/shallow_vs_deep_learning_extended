@@ -48,7 +48,7 @@ class KPI_KQI(Util):
     def create_model(self):
         model =  tf.keras.models.Sequential([
             # flatten layer
-            tf.keras.layers.Flatten(input_shape=(13,)),
+            tf.keras.layers.Input(shape=(13,)),
             # hidden layers
             tf.keras.layers.Dense(100, activation='relu'),
             # output layer

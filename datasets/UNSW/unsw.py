@@ -46,7 +46,7 @@ class UNSW(Util):
     def create_model(self):
         model= tf.keras.models.Sequential([
             # input layer
-            tf.keras.layers.InputLayer(input_shape=(39,)),
+            tf.keras.layers.Input(input_shape=(39,)),
             # hidden layers
             tf.keras.layers.Dense(128, activation='relu'),
             tf.keras.layers.Dense(96, activation='relu'),

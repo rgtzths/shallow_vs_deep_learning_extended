@@ -30,7 +30,7 @@ class IoTID20(Util):
         
         X["Flow_ID"] = le.fit_transform(X["Flow_ID"])
         
-        y = data['Sub_Cat']
+        y = pd.Series(le.fit_transform(data['Sub_Cat']), name='target')
         n_samples=X.shape[0]
 
         x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=True)
@@ -51,6 +51,22 @@ class IoTID20(Util):
         y_test.to_csv(f"{output}/y_test.csv", index=False)
 
 
-    def create_model(self):
-        #TODO
-        return
+    def create_model(self):#UNSW model
+        model= tf.keras.models.Sequential([
+            # input layer
+            tf.keras.layers.Input(input_shape=(27,)),
+            # hidden layers
+            tf.keras.layers.Dense(128, activation='relu'),
+            tf.keras.layers.Dense(96, activation='relu'),
+            tf.keras.layers.Dense(64, activation='relu'),
+            tf.keras.layers.Dropout(0.25),
+            # output layer
+            tf.keras.layers.Dense(9, activation='softmax')
+        ])
+        model.compile(
+                    optimizer=tf.keras.optimizers.Adam(), 
+                    loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+                    metrics=['accuracy']
+                )
+
+        return model

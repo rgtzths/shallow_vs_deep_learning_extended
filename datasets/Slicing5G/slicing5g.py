@@ -70,7 +70,7 @@ class Slicing5G(Util):
     def create_model(self):
         model= tf.keras.models.Sequential([
                 # flatten layer
-                tf.keras.layers.Flatten(input_shape=(60,)),
+                tf.keras.layers.Input(shape=(60,)),
                 # hidden layers
                 tf.keras.layers.Dense(8, activation='relu'),
                 tf.keras.layers.Dense(4, activation='relu'),

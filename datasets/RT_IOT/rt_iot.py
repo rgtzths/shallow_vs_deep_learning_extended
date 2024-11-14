@@ -52,7 +52,7 @@ class RT_IOT(Util):
     def create_model(self):
         model =  tf.keras.models.Sequential([
             # flatten layer
-            tf.keras.layers.Flatten(input_shape=(83,)),
+            tf.keras.layers.Input(shape=(83,)),
             # hidden layers
             tf.keras.layers.Dense(128, activation='relu'),
             tf.keras.layers.Dense(128, activation='relu'),
