@@ -22,9 +22,8 @@ class KPI_KQI(Util):
         
         X = data.drop(columns=["Service"])        
         y = data['Service']
-        
         y = pd.Series(le.fit_transform(y), name='target')
-
+        
         n_samples=X.shape[0]
 
         x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=True)

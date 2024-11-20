@@ -44,26 +44,10 @@ class NetSlice5G(Util):
         print(f"Shape of the train data: {x_train.shape}")
         print(f"Shape of the test data: {x_test.shape}\n")
         
-        np.savetxt(f"{output}/X_train.csv", x_train, delimiter=",", fmt="%d")
-        np.savetxt(f"{output}/X_test.csv", x_test, delimiter=",", fmt="%d")
-        np.savetxt(f"{output}/y_train.csv", y_train, delimiter=",", fmt="%d")
-        np.savetxt(f"{output}/y_test.csv", y_test, delimiter=",", fmt="%d")
-
-    def load_training_data(self):
-        """
-        Load the training data
-        """
-        x_train = np.loadtxt(f"datasets/{self.name}/data/X_train.csv", delimiter=",")
-        y_train = np.loadtxt(f"datasets/{self.name}/data/y_train.csv", delimiter=",")
-        return x_train, y_train
-
-    def load_test_data(self):
-        """
-        Load the test data
-        """
-        x_test = np.loadtxt(f"datasets/{self.name}/data/X_test.csv", delimiter=",")
-        y_test = np.loadtxt(f"datasets/{self.name}/data/y_test.csv", delimiter=",")
-        return x_test, y_test
+        x_train.to_csv(f"{output}/X_train.csv", index=False)
+        x_test.to_csv(f"{output}/X_test.csv", index=False)
+        y_train.to_csv(f"{output}/y_train.csv", index=False)
+        y_test.to_csv(f"{output}/y_test.csv", index=False)
     
     def create_model(self):
         model = tf.keras.models.Sequential([

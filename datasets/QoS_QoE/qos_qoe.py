@@ -30,7 +30,7 @@ class QoS_QoE(Util):
         y = pd.Series(le.fit_transform(y), name='target')
 
         n_samples=X.shape[0]
-    
+        
         x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=True)
 
         scaler = StandardScaler()
@@ -51,7 +51,7 @@ class QoS_QoE(Util):
     def create_model(self):#UNSW model
         model= tf.keras.models.Sequential([
             # input layer
-            tf.keras.layers.Input(input_shape=(47,)),
+            tf.keras.layers.Input(shape=(47,)),
             # hidden layers
             tf.keras.layers.Dense(128, activation='relu'),
             tf.keras.layers.Dense(96, activation='relu'),

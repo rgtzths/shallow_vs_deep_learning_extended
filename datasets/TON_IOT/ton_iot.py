@@ -1,7 +1,7 @@
 import pandas as pd
 from pathlib import Path
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.preprocessing import QuantileTransformer, LabelEncoder
 import tensorflow as tf
 from sklearn.utils import resample
 
@@ -22,7 +22,6 @@ class TON_IOT(Util):
 
         le = LabelEncoder()
 
-
         data = pd.read_csv(dataset)
         data.dropna(axis = 0, inplace = True)
         y = data['Attack']
@@ -33,16 +32,14 @@ class TON_IOT(Util):
 #
         #_, x, _, y = train_test_split(x_, y_, test_size=0.25, stratify=y_, random_state=42)
         #del x_, y_
-        
-        n_samples = x.shape[0]
 
-        scaler = StandardScaler()
+        n_samples = x.shape[0]
+        scaler = QuantileTransformer(output_distribution='normal')        
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42, shuffle=True)
         x_train = pd.DataFrame(scaler.fit_transform(x_train), columns=x_train.columns)
         x_test = pd.DataFrame(scaler.transform(x_test), columns=x_test.columns)
         #x_train, y_train = resample(x_train, y_train, n_samples=x_train.shape[0]//10, random_state=42, stratify=y_train)
         #x_test, y_test = resample(x_test, y_test, n_samples=x_test.shape[0]//2, random_state=42, stratify=y_test)
-
 
         print(f"\nTotal samples {n_samples}")
         print(f"Shape of the train data: {x_train.shape}")
@@ -57,7 +54,7 @@ class TON_IOT(Util):
     def create_model(self):
         model=  tf.keras.models.Sequential([
             # input layer
-            tf.keras.layers.Input(input_shape=(39,)),
+            tf.keras.layers.Input(shape=(39,)),
             # hidden layers
             tf.keras.layers.Dense(32, activation='relu'),
             tf.keras.layers.Dropout(0.2),

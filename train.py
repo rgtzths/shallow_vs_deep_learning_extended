@@ -25,10 +25,6 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, Gradien
 from sklearn.model_selection import GridSearchCV
 import tensorflow as tf
 
-
-# Set an environment variable
-os.environ['OPENBLAS_NUM_THREADS'] = '64'
-
 import warnings
 warnings.filterwarnings('ignore')
 os.environ["PYTHONWARNINGS"] = "ignore" # Also affect subprocesses
@@ -53,7 +49,7 @@ def fit(cls, X, y, is_sklearn):
             cls.fit(X, y)
             return cls
     else:
-        early_stop_callback = tf.keras.callbacks.EarlyStopping(monitor='accuracy', patience=10)
+        early_stop_callback = tf.keras.callbacks.EarlyStopping(monitor='accuracy', patience=5)
         model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
             filepath="temp_model.keras",
             monitor='accuracy',
@@ -61,7 +57,7 @@ def fit(cls, X, y, is_sklearn):
             save_best_only=True)
         cls = cls()
         cls.fit(X, y, batch_size=64, epochs=200, verbose=0, callbacks=[early_stop_callback, model_checkpoint_callback])
-        cls = tf.keras.models.load_model("temp")
+        cls = tf.keras.models.load_model("temp_model.keras")
         return cls
 
 @timeit.exectime(5)
@@ -97,15 +93,15 @@ def train_models(X_train, y_train, X_test, y_test, model_fn, seed, results_folde
     results_file = open(results_folder/"results.md", "w")
     models = [#('DNN', {}),
               ('LOG', {'random_state':[seed], 'penalty': ['l1','l2'], 'C': [0.001, 0.01, 0.1, 1, 10], 
-                       'solver' :['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']}),
-              ('KNN', {'weights': ['uniform', 'distance'], 'n_neighbors': [3,5,7,9], 'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute'],
-                       'leaf_size': [1, 10, 30, 60, 90, 120]}),
-              ('SVM', {'random_state':[seed], 'C': [0.001, 0.01, 0.1, 1], 'kernel': ['linear', 'rbf']}),
-              ('NB',  {'var_smoothing': np.logspace(0,-9, num=100)}),
-              ('DT',  {'random_state':[seed], 'criterion':['gini','entropy'], 'max_depth':[3,5,7,9], 'max_features': ['auto', 'sqrt', 'log2']}),
-              ('RF',  {'random_state':[seed], 'n_estimators':[5, 10, 50, 100], 'max_features':['auto', 'sqrt', 'log2'], 'max_depth':[3,5,7,9]}),
-              ('ABC', {'random_state':[seed], 'n_estimators':[5, 10, 50, 100]}),
-              ('GBC', {'random_state':[seed], 'n_estimators':[5, 10, 50, 100], 'max_features':['auto', 'sqrt', 'log2'], 'max_depth':[3,5,7,9]})
+                       'solver' :['liblinear', 'sag', 'saga']}),
+              #('KNN', {'weights': ['uniform', 'distance'], 'n_neighbors': [3,5,7,9], 'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute'],
+                #       'leaf_size': [1, 10, 30, 60, 90, 120]}),
+              ('SVM', {'random_state':[seed], 'C': [0.001, 0.01, 0.1, 1], 'kernel': ['linear']})
+              #('NB',  {'var_smoothing': np.logspace(0,-9, num=100)}),
+              #('DT',  {'random_state':[seed], 'criterion':['gini','entropy'], 'max_depth':[3,5,7,9], 'max_features': ['auto', 'sqrt', 'log2']}),
+              #('RF',  {'random_state':[seed], 'n_estimators':[5, 10, 50, 100], 'max_features':['auto', 'sqrt', 'log2'], 'max_depth':[3,5,7,9]}),
+              #('ABC', {'random_state':[seed], 'n_estimators':[5, 10, 50, 100]}),
+              #('GBC', {'random_state':[seed], 'n_estimators':[5, 10, 50, 100], 'max_features':['auto', 'sqrt', 'log2'], 'max_depth':[3,5,7,9]})
               ]
 
     print('| Model name | Train time | Infer time | ACC | F1  | MCC |')
@@ -123,6 +119,8 @@ def train_models(X_train, y_train, X_test, y_test, model_fn, seed, results_folde
         else:
             cls = model_fn
             cls()
+        #if len(X_train) > 100000:
+        #        x, y = shuffle(X_train, y_train, random_state=42, n_samples=100000)
         mtt, std_tt , cls = fit(cls, X_train, y_train, is_sklearn)
         mti, std_ti , y_pred = predict(cls, X_test, is_sklearn)
         y_pred = y_pred if is_sklearn else [np.argmax(y) for y in y_pred]
@@ -137,7 +135,7 @@ def train_models(X_train, y_train, X_test, y_test, model_fn, seed, results_folde
         if is_sklearn:
             joblib.dump(cls, results_folder/ f'{cls_name}.joblib')
         else:
-            cls.save(results_folder/f"dnn_model")
+            cls.save(results_folder/f"dnn_model.keras")
     results_file.close()
 
 
@@ -156,17 +154,17 @@ if __name__ == "__main__":
     
     if args.d == None:
         for dataset in DATASETS.keys():
-            #if dataset not in ["Slicing5G", "NetworkSlicing5G", "NetSlice5G", "UNSW", "IOT_DNL"]:
+            
             print(f"Running dataset: {dataset}")
             d = DATASETS[dataset]()
 
-            results = results / d.name
-            results.mkdir(parents=True, exist_ok=True)
+            results_dir = results / d.name
+            results_dir.mkdir(parents=True, exist_ok=True)
 
             X_train, y_train = d.load_training_data()
             X_test, y_test = d.load_test_data()
 
-            train_models(X_train, y_train, X_test, y_test, d.create_model, args.s, results)
+            train_models(X_train, y_train, X_test, y_test, d.create_model, args.s, results_dir)
     else:
         d = DATASETS[args.d]()
 

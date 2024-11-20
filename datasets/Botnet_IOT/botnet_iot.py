@@ -46,7 +46,7 @@ class Botnet_IOT(Util):
         #UNSW model
         model= tf.keras.models.Sequential([
             # input layer
-            tf.keras.layers.Input(input_shape=(23,)),
+            tf.keras.layers.Input(shape=(23,)),
             # hidden layers
             tf.keras.layers.Dense(128, activation='relu'),
             tf.keras.layers.Dense(96, activation='relu'),
