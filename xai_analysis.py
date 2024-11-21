@@ -20,7 +20,7 @@ tf.keras.utils.set_random_seed(args.seed)
 datasets = DATASETS.keys() if args.d == None else [args.d]
 
 for dataset in datasets:
-    if dataset not in ["Slicing5G", "NetSlice5G"]:
+    if dataset not in ["TON_IOT", "NetSlice5G", "Slicing5G", "IOT_DNL", "UNSW", "Botnet_IOT"]:
         model_path = f"{args.f}/{dataset}/dnn_model.keras"
 
         dataset_util = DATASETS[dataset]()
@@ -38,9 +38,17 @@ for dataset in datasets:
         feature_importance_list = []
         for xai in XAI.keys():
             feature_importance = XAI[xai](x_train, y_train, x_test, y_test, model)
+
             feature_importance_list.append(list(feature_importance.values()))
             with open(f"{args.f}/{dataset}/{xai}.json", "w") as f: 
                 json.dump(feature_importance, f, indent=4)
+        indices_to_pop = []
+        for i in range(len(feature_importance_list[0])):
+            if str(feature_importance_list[0][i]) == "nan" or str(feature_importance_list[1][i]) == "nan":
+                indices_to_pop.append(i)
+        for i in sorted(indices_to_pop, reverse=True):
+            feature_importance_list[0].pop(i)
+            feature_importance_list[1].pop(i)
 
         correlation = pearsonr(feature_importance_list[0], feature_importance_list[1])[0]
 
