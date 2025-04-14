@@ -91,17 +91,17 @@ def best_score(cv_results_):
 
 def train_models(X_train, y_train, X_test, y_test, model_fn, seed, results_folder):
     results_file = open(results_folder/"results.md", "w")
-    models = [#('DNN', {}),
+    models = [('DNN', {}),
               ('LOG', {'random_state':[seed], 'penalty': ['l1','l2'], 'C': [0.001, 0.01, 0.1, 1, 10], 
                        'solver' :['liblinear', 'sag', 'saga']}),
-              #('KNN', {'weights': ['uniform', 'distance'], 'n_neighbors': [3,5,7,9], 'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute'],
-                #       'leaf_size': [1, 10, 30, 60, 90, 120]}),
+              ('KNN', {'weights': ['uniform', 'distance'], 'n_neighbors': [3,5,7,9], 'algorithm': ['auto', 'ball_tree', 'kd_tree', 'brute'],
+                     'leaf_size': [1, 10, 30, 60, 90, 120]}),
               ('SVM', {'random_state':[seed], 'C': [0.001, 0.01, 0.1, 1], 'kernel': ['linear']})
-              #('NB',  {'var_smoothing': np.logspace(0,-9, num=100)}),
-              #('DT',  {'random_state':[seed], 'criterion':['gini','entropy'], 'max_depth':[3,5,7,9], 'max_features': ['auto', 'sqrt', 'log2']}),
-              #('RF',  {'random_state':[seed], 'n_estimators':[5, 10, 50, 100], 'max_features':['auto', 'sqrt', 'log2'], 'max_depth':[3,5,7,9]}),
-              #('ABC', {'random_state':[seed], 'n_estimators':[5, 10, 50, 100]}),
-              #('GBC', {'random_state':[seed], 'n_estimators':[5, 10, 50, 100], 'max_features':['auto', 'sqrt', 'log2'], 'max_depth':[3,5,7,9]})
+              ('NB',  {'var_smoothing': np.logspace(0,-9, num=100)}),
+              ('DT',  {'random_state':[seed], 'criterion':['gini','entropy'], 'max_depth':[3,5,7,9], 'max_features': ['auto', 'sqrt', 'log2']}),
+              ('RF',  {'random_state':[seed], 'n_estimators':[5, 10, 50, 100], 'max_features':['auto', 'sqrt', 'log2'], 'max_depth':[3,5,7,9]}),
+              ('ABC', {'random_state':[seed], 'n_estimators':[5, 10, 50, 100]}),
+              ('GBC', {'random_state':[seed], 'n_estimators':[5, 10, 50, 100], 'max_features':['auto', 'sqrt', 'log2'], 'max_depth':[3,5,7,9]})
               ]
 
     print('| Model name | Train time | Infer time | ACC | F1  | MCC |')
