@@ -1,10 +1,10 @@
 import time
 import argparse
 import pathlib
-
+import json
 import numpy as np
 import tensorflow as tf
-from sklearn.metrics import accuracy_score, f1_score, matthews_corrcoef
+from sklearn.metrics import accuracy_score, f1_score, matthews_corrcoef, roc_auc_score
 from sklearn.model_selection import train_test_split
 
 from config import DATASETS
@@ -129,53 +129,59 @@ models = [('IOT_DNL', model1), ('KPI_KQI', model2), ('NetSlice5G', model3), ('RT
 
 for dataset in datasets:
     d = DATASETS[dataset]()
-    results = results / f"{d.name}/nn_search"
-    results.mkdir(parents=True, exist_ok=True)
+    dataset_results = results / f"{d.name}/nn_search"
+    dataset_results.mkdir(parents=True, exist_ok=True)
 
-    results_file = open(results/"results.txt", "w")
-
+    results_file = open(dataset_results/"results.txt", "w")
+    model_history_file =  open(dataset_results/"training_history.json", "w")
     X_train, y_train = d.load_training_data()
     x_train, x_val, y_train, y_val = train_test_split(X_train, y_train, random_state=42, test_size=0.2)
 
     input_shape = x_train.shape[1]
     output = len(np.unique(y_train))
 
-
     best_model = "None"
     best_mcc = -1
     best_time = 0
+    best_roc_auc_res = 0
+    best_f1_score_res = 0
+    best_hisotry = {}
     for model_name, model_fn in models:
         model = model_fn(input_shape, output)
         model.compile(
                     optimizer=tf.keras.optimizers.Adam(), 
                     loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-                    metrics=['accuracy']
+                    metrics=['accuracy'] # adicionar ROC_AUC e f1_score
                 )
         callback = tf.keras.callbacks.EarlyStopping(monitor='accuracy', patience=10)
 
         start = time.time()
-        history = model.fit(x_train, y_train,
-                             batch_size=1024, epochs=200, verbose=0,
+        history = model.fit(x_train, y_train, #Adicionar val_dataset
+                             batch_size=1024, epochs=1, verbose=0,
                              callbacks=[callback])
         end = time.time()-start
         y_pred = model.predict(x_val, verbose=0)
         y_pred = [np.argmax(y) for y in y_pred]
 
         mcc = matthews_corrcoef(y_val, y_pred)
-        
-        if mcc > best_mcc:
+        f1_score_res = f1_score(y_val, y_pred, average="weighted")
+        roc_auc_res = 0#roc_auc_score(y_val, y_pred, multi_class='ovr')
+
+        if mcc > best_mcc or ( mcc == best_mcc and best_time > end):
             best_model = model_name
             best_mcc = mcc
             best_time = end
-        elif mcc == best_mcc and best_time > end:
-            best_model = model_name
-            best_mcc = mcc
-            best_time = end
+            best_f1_score_res = f1_score_res
+            best_roc_auc_res = roc_auc_res
+            best_hisotry = history.history
 
     print(f"Best model: {model_name}")
     print(f"Best mcc: {best_mcc:.2f}")
     print(f"Best training time: {best_time:.2f}")
-    results_file.write(f"Best model: {model_name}")
-    results_file.write(f"Best mcc: {best_mcc:.2f}")
-    results_file.write(f"Best training time: {best_time:.2f}")
+    results_file.write(f"Best model: {model_name}\n")
+    results_file.write(f"Best mcc: {best_mcc:.2f}\n")
+    results_file.write(f"Best f1-score: {best_f1_score_res:.2f}\n")
+    results_file.write(f"Best auc_roc: {best_roc_auc_res:.2f}\n")
+    results_file.write(f"Best training time: {best_time:.2f}\n")
     results_file.close()
+    json.dump(best_hisotry, model_history_file)

@@ -19,9 +19,9 @@ class KPI_KQI(Util):
 
         data = pd.read_csv(dataset)
         data.dropna(axis = 0, inplace = True)
-        
-        X = data.drop(columns=["Service"])        
-        y = data['Service']
+        print(data)
+        X = data.drop(columns=[" Service"])        
+        y = data[' Service']
         y = pd.Series(le.fit_transform(y), name='target')
         
         n_samples=X.shape[0]

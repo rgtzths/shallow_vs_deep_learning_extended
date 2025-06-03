@@ -15,22 +15,20 @@ class QoS_QoE(Util):
 
 
     def data_processing(self):
-        df = pd.read_csv(f"datasets/{self.name}/data/QoS_QoE_Dataset.csv")
+        df = pd.read_csv(f"datasets/{self.name}/data/Dataset-QOE_prediction_ICC2018.csv", sep=",", index_col=None)
         le = LabelEncoder()
-
         output = f"datasets/{self.name}/data"
         Path(output).mkdir(parents=True, exist_ok=True)
 
         df.dropna(axis = 0, inplace = True)
-
         X = df.drop(columns=["RebufferingRatio", "AvgVideoBitRate", "AvgVideoQualityVariation", "StallLabel"])
+        
         y = df["StallLabel"]
 
         X["DASHPolicy"] = le.fit_transform(X["DASHPolicy"])
         y = pd.Series(le.fit_transform(y), name='target')
 
         n_samples=X.shape[0]
-        
         x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=True)
 
         scaler = StandardScaler()

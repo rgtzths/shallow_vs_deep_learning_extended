@@ -1,7 +1,4 @@
-import tensorflow as tf
-
 from datasets.IOT_DNL.iot_dnl import IOT_DNL
-from datasets.TON_IOT.ton_iot import TON_IOT
 from datasets.UNSW.unsw import UNSW
 from datasets.Slicing5G.slicing5g import Slicing5G
 from datasets.NetSlice5G.netslice5g import NetSlice5G
@@ -25,7 +22,6 @@ DATASETS = {
     "QoS_QoE" : QoS_QoE,
     "RT_IOT" : RT_IOT,
     "UNAC" : UNAC,
-    "TON_IOT": TON_IOT,
 }
 
 XAI = {

@@ -20,7 +20,7 @@ class UNAC(Util):
 
         Path(output).mkdir(parents=True, exist_ok=True)
 
-        data = pd.read_csv(dataset)
+        data = pd.read_csv(dataset, sep=";")
         data.dropna(axis = 0, inplace = True)
         y = data['output'] -1
         x = data.drop(columns=["output", "file"])

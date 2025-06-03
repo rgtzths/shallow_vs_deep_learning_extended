@@ -6,8 +6,8 @@ import re
 
 results_dir =  pathlib.Path("results")
 
-slicing_datasets = ["Slicing5G", "NetSlice5G"]
-ids_datasets = ["UNSW", "IOT_DNL"]#,  "TON_IOT"]
+slicing_datasets = ["Slicing5G", "NetSlice5G", "KPI_KQI", "QoS_QoE", "UNAC"]
+ids_datasets = ["UNSW", "IOT_DNL", "RT_IOT", "Botnet_IOT", "IoTID20"]
 models = [("DNN", "DNN"), ("LOG", "LR"), ("KNN", "k-NN"), ("SVM", "SVM"), ("NB", "GaussianNB"), ("DT","DT") , ("RF", "RF"), ("ABC", "AdaBoost"), ("GBC", "Gradient Boosting")]
 
 extracted_data = {}

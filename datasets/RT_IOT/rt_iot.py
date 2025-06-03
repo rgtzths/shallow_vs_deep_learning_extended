@@ -23,7 +23,7 @@ class RT_IOT(Util):
         
         df.dropna(axis = 0, inplace = True)
 
-        X = df.drop(columns=["Attack_type", "no"])
+        X = df.drop(columns=["Attack_type"])
         y = df["Attack_type"]
         X["service"] = le.fit_transform(X["service"])
         X["proto"] = le.fit_transform(X["proto"])

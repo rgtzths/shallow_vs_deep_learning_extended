@@ -1,1 +1,1 @@
-https://link.springer.com/chapter/10.1007/978-3-031-51135-6_11 - Dataset & model paper
+https://link.springer.com/chapter/10.1007/978-3-031-51135-6_11 - Dataset & model paper, the dataset is in the git repository
