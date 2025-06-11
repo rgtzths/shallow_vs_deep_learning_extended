@@ -30,13 +30,13 @@ class Slicing5G(Util):
         df["Packet Loss Rate (Reliability)"] = le.fit_transform(df["Packet Loss Rate (Reliability)"])
         df["Packet Delay Budget (Latency)"] = le.fit_transform(df["Packet Delay Budget (Latency)"])
         df["Slice Type (Output)"] = le.fit_transform(df["Slice Type (Output)"])
-
+        #print(le.classes_)
         x = df.drop('Slice Type (Output)', axis=1)
         y = df['Slice Type (Output)']
-
+        #print(list(x.columns))
         n_samples = x.shape[0]
 
-        X_train, X_test, y_train, y_test = train_test_split(x, y, random_state=42, test_size=0.2)
+        X_train, X_test, y_train, y_test = train_test_split(x, y, random_state=42, test_size=0.2, stratify=y)
         
         print(f"\nTotal samples {df.values.shape[0]}")
         print(f"Shape of the train data: {X_train.shape}")
@@ -58,10 +58,5 @@ class Slicing5G(Util):
                 # output layer
                 tf.keras.layers.Dense(3, activation="softmax")
             ])
-        model.compile(
-                    optimizer=tf.keras.optimizers.Adam(), 
-                    loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-                    metrics=['accuracy']
-                )
 
         return model

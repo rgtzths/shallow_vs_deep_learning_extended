@@ -8,8 +8,7 @@ import matplotlib
 
 from config import DATASETS
 
-font = {
-        'size'   : 14}
+font = {'size' : 14}
 
 matplotlib.rc('font', **font)
 
@@ -22,9 +21,8 @@ datasets = DATASETS.keys() if args.d == None else [args.d]
 
 correlations = {}
 for dataset in datasets:
-    if dataset != "TON_IOT":
-        in_file = open(f"{args.f}/{dataset}/correlation.txt", "r")
-        correlations[dataset] = float(in_file.read().split(":")[1])
+    in_file = open(f"{args.f}/{dataset}/correlation.txt", "r")
+    correlations[dataset] = float(in_file.read().split(":")[1])
 
 fig, ax = plt.subplots(figsize=(15, 8))
 ax.set_ylabel('Correlation', fontsize=20)
@@ -32,4 +30,4 @@ ax.set_xlabel('Dataset', fontsize=20)
 ax.set(ylim=(-1, 1))
 ax.bar(list(correlations.keys()), list(correlations.values()))
 
-fig.savefig(f"{args.f}/barplot_correlations.png", dpi=300.0, bbox_inches='tight', format="png", orientation="landscape")
+fig.savefig(f"{args.f}/barplot_correlations.pdf", bbox_inches='tight', orientation="landscape")

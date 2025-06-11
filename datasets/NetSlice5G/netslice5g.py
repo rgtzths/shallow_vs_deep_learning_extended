@@ -28,7 +28,7 @@ class NetSlice5G(Util):
         x_train = df_train.drop(columns=["slice Type"])
         y_train = df_train["slice Type"] -1 
 
-        x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, random_state=42, test_size=0.2)
+        x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, random_state=42, test_size=0.2, stratify=y_train)
 
         x_train["Time"] = scaler.fit_transform(x_train["Time"].values.reshape(-1,1))
         x_test["Time"] = scaler.transform(x_test["Time"].values.reshape(-1,1))
@@ -60,11 +60,5 @@ class NetSlice5G(Util):
                 # output layer
                 tf.keras.layers.Dense(3, activation="softmax")
             ])
-
-        model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=0.01), 
-            loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-            metrics=['accuracy']
-        )
 
         return model

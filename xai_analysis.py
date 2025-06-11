@@ -28,8 +28,6 @@ for dataset in datasets:
     if x_test.shape[0] > 100000:
         x_test, y_test = resample(x_test, y_test, n_samples=100000, random_state=args.seed, stratify=y_test)
 
-    
-
     print(f"X_test shape: {x_test.shape}")
 
     model = tf.keras.models.load_model(model_path)

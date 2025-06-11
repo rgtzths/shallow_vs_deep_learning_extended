@@ -50,3 +50,4 @@ urllib3
 Werkzeug
 wrapt
 alibi
+psutil

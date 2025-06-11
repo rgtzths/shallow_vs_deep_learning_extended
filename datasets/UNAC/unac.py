@@ -28,7 +28,7 @@ class UNAC(Util):
         n_samples = x.shape[0]
 
         scaler = StandardScaler()
-        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42, shuffle=True)
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42, shuffle=True, stratify=y)
 
         x_train = pd.DataFrame(scaler.fit_transform(x_train), columns=x_train.columns)
         x_test = pd.DataFrame(scaler.transform(x_test), columns=x_test.columns)
@@ -54,10 +54,5 @@ class UNAC(Util):
             # output layer
             tf.keras.layers.Dense(3, activation='softmax')
         ])
-        model.compile(
-                    optimizer=tf.keras.optimizers.Adam(), 
-                    loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-                    metrics=['accuracy']
-                )
 
         return model

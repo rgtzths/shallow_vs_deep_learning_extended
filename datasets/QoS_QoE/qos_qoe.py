@@ -29,7 +29,7 @@ class QoS_QoE(Util):
         y = pd.Series(le.fit_transform(y), name='target')
 
         n_samples=X.shape[0]
-        x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=True)
+        x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=True, stratify=y)
 
         scaler = StandardScaler()
         x_train = pd.DataFrame(scaler.fit_transform(x_train), columns=x_train.columns)
@@ -46,22 +46,16 @@ class QoS_QoE(Util):
         y_test.to_csv(f"{output}/y_test.csv", index=False)
 
 
-    def create_model(self):#UNSW model
-        model= tf.keras.models.Sequential([
-            # input layer
-            tf.keras.layers.Input(shape=(47,)),
-            # hidden layers
-            tf.keras.layers.Dense(128, activation='relu'),
-            tf.keras.layers.Dense(96, activation='relu'),
-            tf.keras.layers.Dense(64, activation='relu'),
-            tf.keras.layers.Dropout(0.25),
-            # output layer
-            tf.keras.layers.Dense(3, activation='softmax')
-        ])
-        model.compile(
-                    optimizer=tf.keras.optimizers.Adam(), 
-                    loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-                    metrics=['accuracy']
-                )
+    def create_model(self): #NetSlice model
+        model = tf.keras.models.Sequential([
+                # flatten layer
+                tf.keras.layers.Input(shape=(47,)),
+                # hidden layers
+                tf.keras.layers.Dense(73, activation='relu'),
+                tf.keras.layers.Dropout(0.5),
+
+                # output layer
+                tf.keras.layers.Dense(3, activation='softmax')
+            ])
 
         return model

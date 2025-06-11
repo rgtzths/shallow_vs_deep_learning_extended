@@ -23,7 +23,7 @@ class RT_IOT(Util):
         
         df.dropna(axis = 0, inplace = True)
 
-        X = df.drop(columns=["Attack_type"])
+        X = df.drop(columns=["Attack_type", "Unnamed: 0"])
         y = df["Attack_type"]
         X["service"] = le.fit_transform(X["service"])
         X["proto"] = le.fit_transform(X["proto"])
@@ -31,7 +31,7 @@ class RT_IOT(Util):
 
         n_samples=X.shape[0]
         
-        x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=True)
+        x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=True, stratify=y)
 
         scaler = StandardScaler()
         x_train = pd.DataFrame(scaler.fit_transform(x_train), columns=x_train.columns)
@@ -60,11 +60,5 @@ class RT_IOT(Util):
             # output layer
             tf.keras.layers.Dense(12, activation='softmax')
         ])
-
-        model.compile(
-                    optimizer=tf.keras.optimizers.Adam(), 
-                    loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-                    metrics=['accuracy']
-                )
-
+        
         return model
